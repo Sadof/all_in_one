@@ -1,0 +1,18 @@
+{% with forloop.counter|stringformat:"i" as data%}
+<p>
+    <button class="btn btn-primary" type="button" data-toggle="collapse"
+            data-target={{'#collapseExample'|add:data}} id = {{comment.id}}
+            aria-expanded="false" aria-controls={{'collapseExample'|add:data}}>
+    Reply
+  </button>
+</p>
+<div class="collapse" id={{'collapseExample'|add:data}}>
+      <form action="" method="post">
+                {{ form.text}}
+                {% csrf_token %}
+                <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                <input class="btn btn-primary mt-2 mb-2" type="submit" value="Replay">
+            </form>
+
+</div>
+{% endwith %}

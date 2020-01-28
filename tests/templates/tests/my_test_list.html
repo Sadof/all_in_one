@@ -1,0 +1,12 @@
+{% extends 'base.html'%}
+{% load static %}
+{% block title %}
+My test list
+{% endblock %}
+{% block content %}
+{% include 'tests/includes/test_table.html' %}
+<script type="text/javascript" src="{% static 'scripts/delete_test.js' %}"></script>
+{% endblock %}
+{% block domready %}
+
+{% endblock %}

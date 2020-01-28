@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content%}
+    <p>Edit</p>
+    {% if messages %}
+     <ul class="messages">
+     {% for message in messages %}
+     <li class="{{ message.tags }}">
+     {{ message|safe }}
+     <a href="#" class="close">x</a>
+     </li>
+     {% endfor %}
+     </ul>
+    {% endif %}
+
+    <form action="" method="post" enctype="multipart/form-data">
+        {{user_form.as_p}}
+        {{profile_form.as_p}}
+          {% csrf_token %}
+          <input type="submit" value="Save changes">
+    </form>
+{% endblock %}

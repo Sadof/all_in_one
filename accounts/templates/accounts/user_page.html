@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}
+{% if profile %}
+{{profile.username}}
+{% else %}
+{{userpage.username}}'s page
+{% endif %}
+{% endblock %}
+{% block header %}
+{% if profile %}
+{{profile.username}}
+{% else %}
+{{userpage.username}}'s page
+{% endif %}
+{% endblock %}
+{% block content%}
+    {% if profile %}
+        <img src="{{profile.profile.photo.url}}" height="40px">
+        {{profile.photo}}
+        <a href="{% url 'accounts:edit_profile' %}">Edit</a>
+        {% include 'accounts/includes/profile_data.html' %}
+        {% if tests %}
+            <h3><a href="{% url 'accounts:my_test_list' %}">My test list</a></h3>
+            {% include 'tests/includes/test_table.html' %}
+        {% else %}
+            <h3>My tests.</h3>
+            <p>No tests yet :(</p>
+        {% endif %}
+    {% else %}
+        {% if userpage.profile.photo %}
+            <img src="{{userpage.profile.photo.url}}" height="40px">
+        {% endif %}
+        {% with profile=userpage%}
+            {% include 'accounts/includes/profile_data.html' %}
+        {% endwith %}
+        <h3>{{userpage.username}}'s tests</h3>
+        {% if tests %}
+            <a href="{% url 'tests:test_list_search' userpage.username %}">{{userpage.username}}'s test list.</a>
+            <table class="table">
+                <thead>
+                <th scope="col">Id</th>
+                <th scope="col">Title</td>
+                <th scope="col">Short description</th>
+                <th scope="col">Completed</td>
+                </thead>
+                {% for test in tests %}
+                    <tr>
+                        <th scope="row">{{test.id}}</th>
+                        <td>{{test.title}}</td>
+                        <td>{{test.description|truncatewords:20}}</td>
+                        <td>{{test.completed}}</td>
+                        <td><a href="{% url 'tests:test' test.slug %}">View</a></td>
+                    </tr>
+                {% endfor%}
+            </table>
+        {% else %}
+            <p>No tests</p>
+        {% endif %}
+        <hr>
+    {% endif %}
+    {% if profile %}
+    <a href="{% url 'search_list_url_user' profile.username %}"><h3>My posts</h3></a>
+    {% else %}
+        <h3>{{userpage.username}}'s posts</h3>
+        <a href="{% url 'search_list_url_user' userpage.username %}"><h3>All posts by {{userpage.username}}</h3></a>
+    {% endif %}
+    {% if posts %}
+        {% for post in posts %}
+           {% include "blog/includes/post_card.html" with text=post.text|truncatewords:20 %}
+            {% endfor %}
+    {% else %}
+        <p>No posts</p>
+    {% endif %}
+
+{% load static%}
+<script type="text/javascript" src="{% static 'scripts/delete_test.js' %}"></script>
+{% endblock %}
+
+

@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block header %}
+{{test.title}} by {{test.author}}
+{% endblock %}
+{% block content %}
+     <div class="result_test_section">
+        <p><span class="test_right_answer_count"></span> out of {{test.len}} right answers!</p>
+         {% if user.is_authenticated %}
+            {% if request.user in test.users_like.all %}
+                <p><button class="like btn btn-success" data-action="like">Like</button> or <button class="like btn btn-secondary" data-action="dislike">Dislike</button> test :)</p>
+            {% elif request.user in test.users_dislike.all %}
+                <p><button class="like btn btn-secondary" data-action="like">Like</button> or <button class="like btn btn-success" data-action="dislike">Dislike</button> test :)</p>
+            {% else %}
+                <p><button class="like btn btn-secondary" data-action="like">Like</button> or <button class="like btn btn-secondary" data-action="dislike">Dislike</button> test :)</p>
+            {% endif%}
+         {% endif %}
+    </div>
+    <div class="test_info_section" data-id={{test.id}}>
+        <p>{{test.description}}</p>
+        <button class="next">Start test.</button>
+        {% if user.is_authenticated %}
+            <div class="prev_test_results">
+                <h4>Your previous resultsfor this test.</h4>
+                {% for result in results %}
+                    <p>{{result.user}} with {{result.result}} right answers out of {{test.len}} {{result.date}}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+{% for page in test.page.all %}
+    <div class="test_page_section">
+    <p>{{page.title}}</p>
+        {% if page.image %}
+            <img src={{page.image.url}}>
+        {% endif%}
+    <p>{{page.text}}</p>
+        <div class="question-radio" data-a={{page.right_answer}}>
+        {% for question in page.question.all %}
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="question-{{page.id}}" id={{page.id}} value={{question.id}}>
+              <label class="form-check-label" for={{page.id}}>
+                {{question.text}}
+          </label>
+            </div>
+        {% endfor%}
+        </div>
+        {% if page.question_commentory%}
+        <div class="question_commentory">Commentary: {{page.question_commentory}}</div>
+        {% endif %}
+        {% if not forloop.last %}
+            <button class="next" {% if page.question.all %}disabled{% endif %}>Next</button>
+        {% else %}
+            <button class="end" disabled>Finish</button>
+        {% endif %}
+    </div>
+    {% endfor%}
+{% endblock%}
+{% block domready %}
+$('.question-radio').click(function(e){
+    if($(':radio').is(':checked')){
+        $(this).parent().find(':button').prop('disabled', false);
+    }
+    })
+$('.next').click(function(e){
+    let parent = $(this).parent();
+    parent.css('display','none');
+    parent.next().css('display','block');
+})
+$('.end').click(function(e){
+        let count = 0;
+        $('.question-radio').each(function(){
+            let self = $(this);
+            let selected = self.find(':radio:checked');
+            let answer = $(this).data('a');
+            $(this).find('.form-check').each(function(i, element){
+                let text = $("<p></p>").text($(this).find('label').text());
+                if($(this).find('input').val() == answer) {
+                    text.addClass('right_answer');
+                } else if ($(this).find('input').val() == selected.val()){
+                     text.addClass('wrong_answer');
+                     self.parent().find('.question_commentory').css('display','block');
+                }
+
+                $(this).replaceWith(text);
+        })
+        console.log(answer, selected.val());
+        if (answer == selected.val()) count += 1;
+        })
+        $('.result_test_section').css('display','block');
+        $('.test_right_answer_count').text(count);
+        $('.test_page_section').each(function(){
+            $(this).find(':button').remove();
+            $(this).css('display','block')
+        })
+    let test_id = $('.test_info_section').data('id');
+    $.ajax({
+        type: 'POST',
+        url: "{% url 'tests:test_complete' %}",
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        data: JSON.stringify({'test_id': test_id, 'result': count})
+
+        })
+    })
+
+$('.like').click(function(){
+    let test_id = $('.test_info_section').data('id');
+    let action = $(this).data('action');
+    console.log(test_id, action);
+    if ($(this).hasClass('btn-secondary')){
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'tests:test_like' %}",
+            contentType: 'application/json; charset=utf-8',
+            dataType:'json',
+            data:JSON.stringify({'action': action, 'test_id':test_id}),
+            success:function(){
+                $('.like').each(function(){
+                    if ($(this).hasClass('btn-secondary')){
+                        $(this).removeClass('btn-secondary');
+                        $(this).addClass('btn-success');
+                    } else {
+                        $(this).removeClass('btn-success');
+                        $(this).addClass('btn-secondary');
+                    }
+                })
+                console.log(1);
+        }
+        })}
+})
+{% endblock%}

@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content%}
+<h2>Test list</h2>
+{% for test in test_list %}
+<div class="test-card">
+<h3><a href='{% url 'tests:test' test.slug %}'>{{test.title}}</a> by <a href="{% url 'accounts:user_page' test.author %}">{{test.author}}</a></h3>
+    <p>{{ test.created }}</p>
+    <p>{{test.title}}</p>
+    <p>{{test.description}}</p>
+    <p>Completed: {{test.completed}}</p>
+    <p>Likes: {{test.users_like.count}} Dislikes: {{test.users_dislike.count}}</p>
+    </div>
+{% endfor %}
+{% endblock%}

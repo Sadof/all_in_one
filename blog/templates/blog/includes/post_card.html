@@ -1,0 +1,19 @@
+<div class="card mb-3" >
+    <div class="card-header">
+        {{ post.date}}
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">{{post.title}} by <a href={{post.author.profile.get_absolute_url}}> {{post.author}}</a></h5>
+        <p class="card-text">{{text|default:post.text}}</p>
+        {% if not admin_panel %}
+        <a href='{{ post.get_absolute_url }}' class='btn btn-primary'>Read</a>
+        {% endif %}
+    </div>
+    {% if post.tag.all %}
+    <div class="card-footer text-muted">
+        {% for tag in post.tag.all %}
+        <a href="{{ tag.get_absolute_url }}">{{tag.title}}</a>
+        {% endfor%}
+    </div>
+    {% endif %}
+</div>

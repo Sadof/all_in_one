@@ -1,0 +1,8 @@
+{% extends "blog/base_blog.html"%}
+
+
+{% block content %}
+    {% url "post_add_url" as action%}
+    {% include "blog/includes/add_form.html" with action_name=action button_name="Add"%}
+
+{% endblock %}

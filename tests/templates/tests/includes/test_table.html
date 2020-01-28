@@ -1,0 +1,31 @@
+
+    <table class="table">
+        <thead>
+        <th scope="col">Id</th>
+        <th scope="col">Title</td>
+        <th scope="col">Description</th>
+        <th scope="col">Status</td>
+        <th scope="col">Completed</td>
+        </thead>
+        {% for test in tests %}
+        <tr>
+            <th scope="row">{{test.id}}</th>
+            <td>{{test.title}}</td>
+            <td>{{test.description|truncatewords:10}}</td>
+            {% if test.status %}
+            <td>Released</td>
+            {% else %}
+            <td>Editing</td>
+            {% endif%}
+            <td>{{test.completed}}</td>
+            {% if not test.status %}
+            <td><a href="{% url 'tests:edit_test' test.id%}">Edit</a></td>
+            <td><a href="{% url 'tests:test_preview' test.id %}">Preview</a></td>
+            {%else%}
+            <td><span>Edit</span></td>
+            <td><a href="{% url 'tests:test' test.slug %}">View</a></td>
+            {%endif%}
+            <td><button data-id={{test.id}} data-url="{% url 'accounts:delete_test_ajax' %}"class="delete_test_button">Delete</button>
+        </tr>
+        {% endfor%}
+    </table>

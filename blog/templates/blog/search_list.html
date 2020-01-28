@@ -1,0 +1,26 @@
+{% extends "blog/base_blog.html" %}
+
+
+{% block content%}
+{% if users %}
+<h3>Users</h3>
+{% for user in users %}
+<div class="user_card">
+    <img src="{{user.profile.photo.url}}" alt="" width="80px">
+    <a href={% if user.username == user.get_username %} "{% url 'accounts:home_page' %}"{% else%}{{user.profile.get_absolute_url}} {% endif%}> {{user.username}}</a>
+</div>
+{% endfor%}
+{% endif %}
+{% if posts %}
+<h3>Posts</h3>
+{% for post in posts%}
+    {% include "blog/includes/post_card.html" %}
+{% endfor %}
+{% endif %}
+{% if tags %}
+<h3>Tags</h3>
+{% for tag in tags %}
+<a href="{{ tag.get_absolute_url }}" class="list-group-item list-group-item-action mb-1">{{tag.title}}</a>
+{% endfor %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,16 @@
+<div class="comment-buttons">
+
+    {% if comment.author.username == user.username or user.is_superuser %}
+
+    <input type="button" value="Delete" class=" btn btn-primary deleteCommentButton" id="{{comment.id}}">
+
+    {% endif%}
+
+
+    {% if comment.author.username == user.username %}
+        <input type="button" value="Edit" class=" btn btn-primary editCommentButton" id="{{comment.id}}">
+        <input type="button" value="Edit" class="btn btn-primary editCommentSubmit" id="{{comment.id}}">
+
+    {% endif %}
+
+</div>

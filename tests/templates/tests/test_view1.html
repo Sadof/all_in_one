@@ -1,0 +1,82 @@
+{% load static %}
+<div id="question-section">
+    <div class="start-page" id="start-page">
+        <h2>Test {{test.title}}</h2>
+        <p>{{test.description}}</p>
+        <button id="start-test">Start test.</button>
+    </div>
+    <form method="post" action="" id="MyForm">
+        {% for page in test.page.all%}
+        <div class="page-section" id="page{{page.order}}" style="display:None;">
+            <h3>{{ page.title }}</h3>
+            <p>{{page.question_text }}</p>
+            {% if page.image %}
+            <img src="{{page.image.url}}">
+            {% endif %}
+            <p><input type="radio" name="page{{page.order}}" value="1">{{ page.answer1 }}<Br>
+                <input type="radio" name="page{{page.order}}" value="2">{{ page.answer2 }}<Br>
+                <input type="radio" name="page{{page.order}}" value="3">{{ page.answer3 }}<Br>
+                <input type="radio" name="page{{page.order}}" value="4">{{ page.answer4 }}<Br></p>
+                {% if page.order == test.len %}
+            <p><input type="submit" value="Отправить" id="submit"></p>
+            {% else %}
+            <a id="next" href="">Next</a>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </form>
+</div>
+<div id="result" style="display:None">
+    <p>Your result is <span id="right"></span> of {{test.len}}<span id="all"></span></p>
+</div>
+<script
+        src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script
+        src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+<script>
+ var csrftoken = Cookies.get('csrftoken');
+ function csrfSafeMethod(method) {
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+ }
+ $.ajaxSetup({
+ beforeSend: function(xhr, settings) {
+ if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+ xhr.setRequestHeader("X-CSRFToken", csrftoken);
+ }
+ }
+ });
+ $(document).ready(function(){
+    $('#start-test').click(function(e){
+        $('#start-page').remove();
+        $('#page1').css("display","block");
+    });
+    $('#next').click(function(e){
+        e.preventDefault();
+        console.log(e.target);
+        var page = e.target.parentNode;
+        page.style.display = 'None';
+        console.log((parseInt(page.id.slice(4))+1).toString());
+        $('#page'+ (parseInt(page.id.slice(4))+1)).css('display','block');
+    });
+    $('#submit').click(function(e){
+        e.preventDefault();
+        var test_answers = [];
+        $('input[name^="page"]:checked').toArray().forEach(function(answer){
+            test_answers.push(answer.value);
+            })
+        console.log(test_answers);
+        $.ajax({
+        type: 'POST',
+        url: '{% url 'tests1:test_view' test.slug %}',
+        data: {
+        'answers': test_answers},
+        success:function(data){
+             $('#question-section').remove();
+             $('#result').css("display", "block");
+             $('#right').text(data['right_answers'])
+         }
+            });
+        return false;
+    })
+ });
+</script>

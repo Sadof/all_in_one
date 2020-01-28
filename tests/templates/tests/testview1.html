@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% block sidemenus%}
+<div class="pages-side-menu">
+    <li {% if not page %}class="list-group-item"{% else %}
+        class="list-group-item selected"{% endif %}><span>Test: </span><a href="{% url 'tests:edit_test' test.id %}">{{test.title}}</a></li>
+    <ul class="list-group page-list">
+    {% for pag in test.page.all %}
+    <li {% if pag.order != page.order %} class="list-group-item"{% else %}
+        class="list-group-item list-group-item-primary"{% endif %} data-id="{{pag.id}}">
+        <a href="{% url 'tests:edit_page' test.id pag.order %}"><span class="page-order">{{pag.order|add:1}}</span>. {{pag.title}}</a>
+        <a href="#" data-page_id={{pag.id}} data-test_id={{test.id}} class="deletePage">✘</a>
+    </li>
+    {% empty %}
+    <li class="list-group-item">No pages</li>
+    {% endfor %}
+        </ul>
+    <li class="list-group-item"><a href="{% url 'tests:add_page' test.id %}">Add new page</a></li>
+
+</div>
+{% endblock %}
+{% block content %}
+<div class="test-form">
+    <form action="" method="post" enctype="multipart/form-data">
+        {{form.as_p}}
+        <!--<ul class="list-group question-list">-->
+        <!--{% for field in formset %}-->
+             <!--<li class="list-group-item" data-id="{{field.id}}">{{field.order}}. {{field.text}}</li>-->
+        <!--{% endfor %}-->
+        <!--</ul>-->
+           <ul class="list-group question-list">
+               {% for question in page.question.all %}
+               <li class="list-group-item" data-id="{{question.id}}"><span class="question-order">{{question.order}}</span>.
+                   <input type="text" value="{{question.text}}"></li>
+               {% empty %}
+               <li class="list-group-item" data-id=""><span class="question-order"></span>.
+                   <input type="text" value=""></li>
+               {% endfor %}
+               </ul>
+        <div id="form_set">
+            <ul>
+                {{formset.as_ul}}
+            </ul>
+            <div id="empty_form" style="display:none">
+                {{ formset.empty_form }}
+            </div>
+        </div>
+
+        <a href="" id="add_more">Add</a>
+        {% csrf_token %}
+        <input type="submit" value="Edit">
+    </form>
+</div>
+
+{% endblock %}
+{% block domready %}
+    let delete_page = $('.deletePage');
+    console.log(delete_page.length);
+    delete_page.click(function(e){
+        e.preventDefault();
+        let del = confirm("Delete page?");
+        if (del){
+            let test_id = this.dataset.test_id;
+            let page_id = this.dataset.page_id;
+            let parent = this.parentNode;
+            $.ajax({
+                url: "{% url 'tests:delete_page' %}",
+                method: 'POST',
+                data: {'page_id': page_id,
+                        'test_id':test_id},
+                success: function(data){
+                    console.log('Deleted');
+                    if (delete_page.length > 1){
+                        parent.remove();
+                        delete_page = $('.deletePage');
+                        }
+                    else {
+                        parent.innerHTML = "No pages"
+                    }
+                    $('.list-group').children().each(function(){
+                        $(this).find('.order').text($(this).index() + 1);
+                    });
+                },
+                error: function(errorData){
+                    console.log("Error");
+                    console.log(errorData);
+                }
+            })
+        }
+        })
+$('.addquestion').click(function(e){
+    e.preventDefault();
+    let parent = this.parentNode;
+    console.log(parent);
+    let li = document.createElement('li');
+    li.innerHTML = "<input type='text'>"
+    parent.insertBefore(li,this);
+});
+$('.page-list').sortable({
+ stop: function(event, ui) {
+    page_order = {};
+    $('.page-list').children().each(function(){
+    // Обновляем поле порядкового номера.
+        $(this).find('.page-order').text($(this).index() + 1);
+     // Связываем порядковый номер с идентификатором объекта.
+        page_order[$(this).data('id')] = $(this).index();
+    });
+    console.log(JSON.stringify(page_order));
+    $.ajax({
+        type: 'POST',
+        url: '{% url "tests:page_order" %}',
+        contentType: 'application/json; charset=utf-8',
+        dataType: 'json',
+        data: JSON.stringify(page_order)
+ });
+ }
+});
+$('#add_more').click(function(e) {
+    e.preventDefault();
+	var form_idx = $('#id_question-TOTAL_FORMS').val();
+    console.log(form_idx);
+	$('#form_set').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
+	$('#id_question-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+});
+
+
+{% endblock %}

@@ -1,0 +1,15 @@
+<form action={{ action_name }}  method="post" {{ enctype|default:"" }} >
+    {% csrf_token%}
+    {% for field in form%}
+        <div class="form-group">
+            {% if field.errors %}
+            <div class="alert alert-danger">
+                {{ field.errors }}
+            </div>
+            {% endif %}
+            {{ field.label_tag }}
+            {{ field }}
+        </div>
+    {% endfor %}
+    <button type="submit" name="submit" class="btn btn-primary">{{button_name}}</button>
+</form>

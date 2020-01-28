@@ -1,0 +1,11 @@
+<h2>Account List</h2>
+<ul>
+    {% for account in object_list %}
+    <li>{% if account.username == user.get_username %}
+        <a href="{% url 'accounts:home_page' %}">{{account.username}}</a>
+        {% else %}
+        <a href="{% url 'accounts:user_page' account.username %}">{{account.username}}</a>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>

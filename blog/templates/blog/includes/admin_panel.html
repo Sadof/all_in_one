@@ -1,0 +1,17 @@
+<div class="admin-panel">
+    <a href="/admin" class="btn btn-primary">Admin</a>
+    <div class="dropdown">
+        <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Add
+        </a>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+            <a class="dropdown-item" href="{% url 'post_add_url'%}">Post</a>
+            <a class="dropdown-item" href="{% url 'tag_add_url'%}">Tag</a>
+        </div>
+    </div>
+
+    {% if admin_panel %}
+    <a href="{{ admin_panel.get_edit_url}}" class="btn btn-primary">Edit</a>
+    <a href="{{ admin_panel.get_delete_url }}" class="btn btn-primary">Delete</a>
+    {% endif %}
+</div>

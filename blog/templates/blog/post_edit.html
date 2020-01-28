@@ -1,0 +1,13 @@
+{% extends "blog/base_blog.html" %}
+
+{% block title %} Editing post {{ post.title|title }} {% endblock %}
+
+
+{% block header %} Editing post "{{ post.title|title }}" {% endblock %}
+
+{% block content %}
+<h2> Editing post </h2>
+{% url "post_edit_url" slug=post.slug as action%}
+{% include "blog/includes/add_form.html" with action_name=action button_name="Edit"%}
+
+{% endblock %}

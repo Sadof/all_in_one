@@ -1,0 +1,22 @@
+<h2>My tests</h2>
+<a href="{% url 'accounts:create_test' %}">Add new test</a>
+{% if tests %}
+<table>
+{% for test in tests %}
+    <tr>
+        <td>{{test.title}}</td>
+        <td>{{test.description}}</td>
+        <td>{{test.created}}</td>
+        <td>{{test.updated}}</td>
+        <td>{{test.completed}}</td>
+        <td>{{test.status}}</td>
+        <td>{{test.len}}</td>
+        <td><a href="{% url 'tests1:test_view' test.slug %}">View</a></td>
+        <td><a href="{% url 'accounts:my_test_edit_view' test.id %}">Edit</a></td>
+        <td><a href="{% url 'accounts:test_delete_view' test.id%}">Delete</a> </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>No tests</p>
+{% endif %}

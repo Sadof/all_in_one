@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+
+
+{% block content %}
+
+{% url "accounts_registration_url" as url%}
+{% include "blog/includes/add_form.html" with action_name=url button_name="Registration" %}
+
+{% endblock%}

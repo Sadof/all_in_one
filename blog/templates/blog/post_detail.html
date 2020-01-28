@@ -1,0 +1,103 @@
+{% extends "blog/base_blog.html"%}
+
+{% block title%} Post "{{ post.title}}" {% endblock%}
+
+
+{% block content%}
+    {% if user.username == post.author %}
+    {{user.username}}{{post.author}}
+    {% endif %}
+  {% include "blog/includes/post_card.html"%}
+    {% if user.is_authenticated %}
+        <form action="" method="post">
+            {% csrf_token%}
+            <p>Comment:</p>
+            {{ form.text }}
+            <button type="submit" value="" class="btn btn-primary mt-5 mb-5">Comment</button>
+        </form>
+    {% else %}
+    <p> <br>You need to be authenticated to add comment!<br></p>
+    <a href="{% url 'accounts:login' %}" class="btn btn-primary">Login</a>
+    <a href="{% url 'accounts:registration' %}" class="btn btn-primary">Registrate</a>
+    {% endif %}
+    <hr>
+    {% for comment in post.comments.all%}
+        {% if not comment.parent %}
+            {% include "blog/includes/comment.html" %}
+        {% if user.is_authenticated %}
+            {% include "blog/includes/comment_reply.html" %}
+        {% endif %}
+        {% endif %}
+    {% empty %}
+    <p>No comments.</p>
+    {% endfor %}
+{% endblock%}
+{% block domready %}
+    var deleteCommentButton = $(".deleteCommentButton");
+    var editCommentButtons = $(".editCommentButton");
+    var editCommentSubmit = $(".editCommentSubmit");
+    deleteCommentButton.click(function(event){
+        let del = confirm("Delete comment?");
+        if (del){
+        let id = $(this).attr('id');
+        $.ajax({
+            url: 'commentdelete/',
+            method: 'POST',
+            data: {'comment_id': id},
+            success: function(data){
+                event.target.parentNode.parentNode.parentNode.remove();
+                if (data["result"]){
+                    $("#"+data["result"]).remove();
+                    }
+            },
+            error: function(errorData){
+                console.log("Error");
+                console.log(errorData);
+            }
+        })
+    }
+    })
+
+    editCommentButtons.click(function() {
+        let id = $(this).attr('id'); // $(this) refers to button that was clicked
+        console.log(id);
+        this.nextSibling.nextSibling.style.display = 'inline-block';
+        this.style.display = 'None';
+        commentp =  $('#'+ "commentText"+id);
+        commentText = commentp.text();
+        let input = document.createElement("input");
+        input.type = "text";
+        input.id = "commentText"+id; // set the CSS class
+        input.value = commentText;
+        commentp.replaceWith(input);
+
+    });
+    editCommentSubmit.click(function(event){
+        let id = $(this).attr('id');
+        let submit = this;
+        let comment = $("#" + "commentText" + id);
+        var formData = comment.val();
+        $.ajax({
+            url: "commentedit/",
+            method: 'POST',
+            data: {
+            'comment_id':id,
+            'text': formData},
+            success: function(data){
+                if (data == 'Ok'){
+                    commentText = comment.val();
+                    let input = document.createElement("p");
+                    input.id = "commentText"+id;
+                    input.innerHTML = commentText;
+                    comment.replaceWith(input);
+                    submit.style.display = 'None';
+                    submit.previousSibling.previousSibling.style.display = 'inline-block';
+                    }
+            },
+            error: function(errorData){
+                console.log("Error");
+                console.log(errorData);
+            }
+        })
+    })
+{% endblock%}

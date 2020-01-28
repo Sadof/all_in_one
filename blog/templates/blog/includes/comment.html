@@ -1,0 +1,27 @@
+<div class="media mt-2" >
+    <img src="{{ comment.author.profile.photo.url}}" class="mr-3" alt="..." width="64px">
+    <div class="media-body">
+        <h5 class="mt-0">{{ comment.author.username}}</h5>
+        {% include "blog/includes/comment_buttons.html" %}
+        <hr>
+        <p id="commentText{{comment.id}}">{{ comment.text }}</p>
+        <hr>
+        <p>{{comment.pub_date}} </p>
+        {% for comment in comment.replies.all reversed %}
+        <div class="media mt-2">
+            <img src="{{ comment.author.profile.photo.url}}" class="mr-3" alt="..." width="64px">
+            {% if comment.author.username == user.username %}
+            <form action="" method="post"></form>
+            {% endif%}
+            <div class="media-body">
+                <h5 class="mt-0">{{ comment.author.username}}</h5>
+                {% include "blog/includes/comment_buttons.html" %}
+                <hr>
+                <p id="commentText{{comment.id}}">{{ comment.text }}</p>
+                <hr>
+                <p>{{comment.pub_date}} </p>
+            </div>
+        </div>
+        {% endfor%}
+    </div>
+</div>

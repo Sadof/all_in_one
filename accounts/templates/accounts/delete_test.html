@@ -1,0 +1,6 @@
+<h2>Delete test {{test.title}}</h2>
+<form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="submit" value="Yes">
+    <a href="{% url 'accounts:my_test_list_view' %}">No</a>
+</form>

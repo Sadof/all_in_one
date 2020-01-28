@@ -1,0 +1,14 @@
+{% extends "blog/base_blog.html"%}
+
+
+
+
+{% block content%}
+<h1>List of tags</h1>
+<div class="list-group">
+    {% for tag in tags %}
+    <a href="{{ tag.get_absolute_url }}" class="list-group-item list-group-item-action mb-1">{{tag.title}}</a>
+    {% endfor%}
+</div>
+{% endblock %}
+

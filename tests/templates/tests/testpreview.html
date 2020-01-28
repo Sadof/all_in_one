@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block header %}
+{{test.title}} by {{test.author}}
+{% endblock %}
+{% block content %}
+     <div class="result_test_section">
+        <p><span class="test_right_answer_count"></span> out of {{test.len}} right answers!</p>
+    </div>
+    <div class="test_info_section" data-id={{test.id}}>
+        <p>{{test.description}}</p>
+        <button class="next">Start test.</button>
+    </div>
+
+{% for page in test.page.all %}
+    <div class="test_page_section">
+    <p>{{page.title}}</p>
+        {% if page.image %}
+            <img src={{page.image.url}}>
+        {% endif%}
+    <p>{{page.text}}</p>
+        <div class="question-radio" data-a={{page.right_answer}}>
+        {% for question in page.question.all %}
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="question-{{page.id}}" id={{page.id}} value={{question.id}}>
+              <label class="form-check-label" for={{page.id}}>
+                {{question.text}}
+          </label>
+            </div>
+        {% endfor%}
+        </div>
+        {% if page.question_commentory%}
+        <div class="question_commentory">Commentary: {{page.question_commentory}}</div>
+        {% endif %}
+        {% if not forloop.last %}
+            <button class="next" {% if page.question.all %}disabled{% endif %}>Next</button>
+        {% else %}
+            <button class="end" disabled>Finish</button>
+        {% endif %}
+    </div>
+    {% endfor%}
+{% endblock%}
+{% block domready %}
+$('.question-radio').click(function(e){
+    if($(':radio').is(':checked')){
+        $(this).parent().find(':button').prop('disabled', false);
+    }
+    })
+$('.next').click(function(e){
+    let parent = $(this).parent();
+    parent.css('display','none');
+    parent.next().css('display','block');
+})
+$('.end').click(function(e){
+        let count = 0;
+        $('.question-radio').each(function(){
+            let self = $(this);
+            let selected = self.find(':radio:checked');
+            let answer = $(this).data('a');
+            $(this).find('.form-check').each(function(i, element){
+                let text = $("<p></p>").text($(this).find('label').text());
+                if($(this).find('input').val() == answer) {
+                    text.addClass('right_answer');
+                } else if ($(this).find('input').val() == selected.val()){
+                     text.addClass('wrong_answer');
+                     self.parent().find('.question_commentory').css('display','block');
+                }
+
+                $(this).replaceWith(text);
+        })
+        console.log(answer, selected.val());
+        if (answer == selected.val()) count += 1;
+        })
+        $('.result_test_section').css('display','block');
+        $('.test_right_answer_count').text(count);
+        $('.test_page_section').each(function(){
+            $(this).find(':button').remove();
+            $(this).css('display','block')
+        })
+    })
+{% endblock%}

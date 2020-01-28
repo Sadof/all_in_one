@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load add_attr %}
+{% block title %}
+Registration
+{% endblock %}
+{% block header %}
+Registration
+{% endblock %}
+{% block content%}
+{% if form.errors %}
+    {% for field in form %}
+        {% for error in field.errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+<form action="" method="post" enctype="multipart/form-data">
+    {% for field in form %}
+    <div class="form-group">
+        {{ field.label_tag }}
+        {{ field|add_attr:"class:form-control" }}
+        {{ field.help_text }}
+    </div>
+    {% endfor %}
+    {% csrf_token %}
+    <input type="submit" value="Registrate">
+</form>
+{% endblock %}

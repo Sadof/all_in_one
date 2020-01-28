@@ -1,0 +1,24 @@
+{% extends "base.html"%}
+
+
+{% block content%}
+<h1>{{form.username}}</h1>
+{% if form.username == request.user.username %}
+<a href="{% url 'update_profile_url' %}">Edit</a>
+{% endif %}
+<img src="{{ form.profile.pic.url}}" width="150px" style="float:right;"alt="">
+<p>First name: {{ form.first_name }}</p>
+<p>Last name: {{ form.last_name }}</p>
+<p>Birtday: {{ form.profile.birth_date }}</p>
+<p>Email: {{ form.email }}</p>
+<p>Bio: {{ form.profile.bio}}</p>
+
+{% if post_list %}
+<h2>Your posts:</h2>
+    {% for post in post_list %}
+    <div class="list-group">
+      <a href="{{post.get_absolute_url}}" class="list-group-item list-group-item-action mt-2">{{post.title|title}}</a>
+    </div>
+    {% endfor%}
+{% endif %}
+{% endblock %}
