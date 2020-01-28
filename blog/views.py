@@ -206,9 +206,10 @@ def SearchList(request, search=None):
                     "users":users,
                     "posts": posts,
                     "tags": tags,
+                    'search_query': search_query,
                 }
         else:
             posts = Post.objects.filter(author__username=search)
-            context = {'posts': posts}
+            context = {'posts': posts, 'search_query': search_query,}
         return render(request,"blog/search_list.html",context=context)
 

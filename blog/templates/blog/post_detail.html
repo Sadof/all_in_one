@@ -36,6 +36,9 @@
     var deleteCommentButton = $(".deleteCommentButton");
     var editCommentButtons = $(".editCommentButton");
     var editCommentSubmit = $(".editCommentSubmit");
+    var replyButtons = $(".reply-button");
+
+
     deleteCommentButton.click(function(event){
         let del = confirm("Delete comment?");
         if (del){
@@ -100,4 +103,13 @@
             }
         })
     })
+    <!--replyButtons.click(function(){-->
+        <!--target = $(this).data('target');-->
+         <!--$('html, body').animate({-->
+             <!--scrollTop: $(target).find("input[name$='text']").offset().top-->
+        <!--}, 1500);-->
+        <!--console.log($(target).find("input[name$='text']"));-->
+        <!--$(target).find("input[name$='text']").focus();-->
+
+    <!--})-->
 {% endblock%}

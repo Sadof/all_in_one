@@ -20,10 +20,12 @@
         <button class="next">Start test.</button>
         {% if user.is_authenticated %}
             <div class="prev_test_results">
-                <h4>Your previous resultsfor this test.</h4>
-                {% for result in results %}
-                    <p>{{result.user}} with {{result.result}} right answers out of {{test.len}} {{result.date}}</p>
-                {% endfor %}
+                {% if results %}
+                    <h4>Your previous resultsfor this test.</h4>
+                    {% for result in results %}
+                        <p>{{result.user}} with {{result.result}} right answers out of {{test.len}} {{result.date}}</p>
+                    {% endfor %}
+                {% endif %}
             </div>
         {% endif %}
     </div>

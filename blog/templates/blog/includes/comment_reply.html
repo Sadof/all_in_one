@@ -1,6 +1,6 @@
 {% with forloop.counter|stringformat:"i" as data%}
 <p>
-    <button class="btn btn-primary" type="button" data-toggle="collapse"
+    <button class="btn btn-primary reply-button" type="button" data-toggle="collapse"
             data-target={{'#collapseExample'|add:data}} id = {{comment.id}}
             aria-expanded="false" aria-controls={{'collapseExample'|add:data}}>
     Reply

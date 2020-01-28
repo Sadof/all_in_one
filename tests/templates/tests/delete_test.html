@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}
+Delete test {{test.title}}
+{% endblock%}
+{% block header %}
+Delete test {{test.title}}
+{% endblock%}
+
+{% block content %}
+<form action="" method="post"  enctype="multipart/form-data">
+    {% csrf_token %}
+    <p>Delete test {{test.title}} </p>
+    <button class="btn btn-outline-primary" type="submit" >Yes</button> <a class="btn btn-outline-danger" href="{% url 'tests:edit_test' test.id %}" role="button">No</a>
+</form>
+{% endblock %}

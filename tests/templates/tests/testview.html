@@ -2,7 +2,10 @@
 {% block sidemenus%}
 <div class="pages-side-menu">
     <li {% if not page %}class="list-group-item"{% else %}
-        class="list-group-item selected"{% endif %}><span>Test: </span><a href="{% url 'tests:edit_test' test.id %}">{{test.title}}   </a><a href="{% url 'tests:test_preview' test.id %}">Preview</a> </li>
+        class="list-group-item selected"{% endif %}><span>Test: </span><a href="{% url 'tests:edit_test' test.id %}">{{test.title}}</a></li>
+    <li class="list-group-item"><a href="{% url 'tests:test_preview' test.id %}">Preview test.</a></li>
+    <li class="list-group-item"><a href="{% url 'tests:test_delete_view' test.id %}">Delete test.</a></li>
+
     <ul class="list-group page-list">
     {% for pag in test.page.all %}
     <li {% if pag.order != page.order %} class="list-group-item"{% else %}

@@ -14,3 +14,4 @@ class Profile(models.Model):
         return 'Profile for user {}'.format(self.user.username)
 
 
+
