@@ -3,8 +3,7 @@
 <div class="pages-side-menu">
     <li {% if not page %}class="list-group-item"{% else %}
         class="list-group-item selected"{% endif %}><span>Test: </span><a href="{% url 'tests:edit_test' test.id %}">{{test.title}}</a></li>
-    <li class="list-group-item"><a href="{% url 'tests:test_preview' test.id %}">Preview test.</a></li>
-    <li class="list-group-item"><a href="{% url 'tests:test_delete_view' test.id %}">Delete test.</a></li>
+
 
     <ul class="list-group page-list">
     {% for pag in test.page.all %}
@@ -22,7 +21,10 @@
     {% endfor %}
         </ul>
     <li class="list-group-item"><a href="{% url 'tests:add_page' test.id %}">Add new page</a></li>
+    <li class="list-group-item"><a href="{% url 'tests:test_preview' test.id %}">Preview test.</a></li>
     <li class="list-group-item"><a href="{% url 'tests:check_test' test.id %}">Publish test</a></li>
+    <li class="list-group-item"><a href="{% url 'tests:test_delete_view' test.id %}">Delete test.</a></li>
+
 
 </div>
 {% endblock %}
@@ -58,24 +60,17 @@
                <!--{% endfor %}-->
                <!--</ul>-->
 
-        {% if page or not pagec %}
-            <input type="submit" value="Edit">
-        {% else %}
-            <input type="submit" value="Add page">
-        {% endif%}
+
         {% csrf_token %}
-    </form>
-    {% if formset %}
-        <form action="{% url 'tests:question_save'%}" method="post">{% csrf_token %}
-            <input type="hidden" value={{test.id}} name="test_id">
-            <input type="hidden" value={{page.order}} name="page_order">
+        <input type="hidden" value={{test.id}} name="test_id">
+        <input type="hidden" value={{page.order}} name="page_order">
             <table class="table">
                 {{ formset.management_form }}
                 {% for form in formset.forms %}
                     {% if forloop.first %}
                         <thead>
                         <tr>
-                            <th>Question order</th>
+                            <th>Answer order</th>
                             {% for field in form.visible_fields %}
                                 <th>{{ field.label|capfirst }}</th>
                             {% endfor %}
@@ -98,10 +93,33 @@
                         {% endfor %}
                     </tr>
                 {% endfor %}
+
             </table>
-            <input type="submit" value="Save"/>
-        </form>
-    {% endif %}
+
+                <table class="empty_form" id="empty_form" style="display:none">
+                <tr class="ui-sortable-handle" id="" >
+                        <td><span class="question_order"></span></td>
+                            <td>
+                                        <input type="hidden" name="question-__prefix__-order" value={{page.id}} id="id_question-__prefix__-order">
+                                        <input type="hidden" name="question-__prefix__-id" value="5" id="id_question-__prefix__-id">
+                                        <input type="hidden" name="question-__prefix__-page" value={{page.id}} id="id_question-__prefix__-page">
+                                <input type="text" name="question-__prefix__-text" value="" class="form-control" maxlength="100" id="id_question-__prefix__-text">
+                            </td>
+                            <td>
+                                <input type="checkbox" name="question-__prefix__-DELETE" id="id_question-__prefix__-DELETE">
+                            </td>
+                    </tr>
+                    </table>
+        {{formset.empty_form}}
+        {% if page or not pagec %}
+            <input type="button" value="Add More" id="add_more">
+            <input type="submit" value="Edit">
+
+        {% else %}
+            <input type="submit" value="Add page">
+        {% endif%}
+    </form>
+
 </div>
 
 {% endblock %}
@@ -209,22 +227,23 @@ $('tbody').sortable({
      });}
      }
 });
-$('#add_more').click(function(e) {
-    e.preventDefault();
-	var form_idx = $('#id_question-TOTAL_FORMS').val();
-    console.log(form_idx);
-	$('.question-list').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
-    $('.question-list').last().addClass("list-group-item ui-sortable-handle");
-	$('#id_question-TOTAL_FORMS').val(parseInt(form_idx) + 1);
-});
+
 
 
 function question_reorder(){
-    $('.table tbody').children().each(function(){
-        console.log($(this).find('.question_order'));
-        $(this).find('.question_order').text($(this).index() + 1);
+    $('.table tbody').children().each(function(index){
+        $(this).find('.question_order').text(index + 1);
 
         })
 }
 question_reorder();
+
+$('#add_more').click(function() {
+	var form_idx = $('#id_question-TOTAL_FORMS').val();
+    console.log(form_idx);
+	$('.table').append($('.empty_form').html().replace(/__prefix__/g, form_idx));
+	$('#id_question-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+    question_reorder()
+});
+
 {% endblock %}

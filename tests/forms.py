@@ -35,6 +35,10 @@ class PageCreateForm(ModelForm):
             'text': forms.Textarea(attrs={'cols': 50, 'rows': 5, 'class': 'form-control'}),
             'question_commentory': forms.Textarea(attrs={'cols': 50, 'rows': 5, 'class': 'form-control'}),
         }
+        labels = {
+            'title': 'Title( optional)',
+            'text': 'Question text',
+        }
 
 
 
@@ -68,8 +72,8 @@ QuestionFormSet = inlineformset_factory(Page,
                                         can_delete=True,
                                         widgets={'order': forms.HiddenInput(),
                                                  'text': forms.TextInput(attrs={'class': 'form-control'})},
-                                        labels={'text': ('Question text'),
-                                                'order': ('Question order'),}
+                                        labels={'text': ('Answer text'),
+                                                'order': ('Answer order'),}
 
                                         )
 

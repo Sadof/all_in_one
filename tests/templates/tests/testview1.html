@@ -124,3 +124,43 @@ $('#add_more').click(function(e) {
 
 
 {% endblock %}
+
+
+
+ {% if formset %}
+        <form action="{% url 'tests:question_save'%}" method="post">{% csrf_token %}
+            <input type="hidden" value={{test.id}} name="test_id">
+            <input type="hidden" value={{page.order}} name="page_order">
+            <table class="table">
+                {{ formset.management_form }}
+                {% for form in formset.forms %}
+                    {% if forloop.first %}
+                        <thead>
+                        <tr>
+                            <th>Answer order</th>
+                            {% for field in form.visible_fields %}
+                                <th>{{ field.label|capfirst }}</th>
+                            {% endfor %}
+                        </tr>
+                        </thead>
+                    {% endif %}
+                    <tr>
+                        <td><span class="question_order">{{form.order.value|default_if_none:""}}</span></td>
+                        {% for field in form.visible_fields %}
+                            <td>
+                                {# Include the hidden fields in the form #}
+                                {% if forloop.first %}
+                                    {% for hidden in form.hidden_fields %}
+                                        {{ hidden }}
+                                    {% endfor %}
+                                {% endif %}
+                                {{ field.errors.as_ul }}
+                                {{ field }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+            <input type="submit" value="Save"/>
+        </form>
+    {% endif %}

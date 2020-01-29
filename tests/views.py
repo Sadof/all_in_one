@@ -11,6 +11,8 @@ from django.views.decorators.http import require_POST
 import json
 from django import forms
 from django.contrib import messages
+from django.utils.text import slugify
+
 
 
 
@@ -27,6 +29,8 @@ class TestCreateView(LoginRequiredMixin,TemplateResponseMixin, View):
         if form.is_valid():
             test = form.save(commit=False)
             test.author = request.user
+            if not test.slug:
+                test.slug = slugify(test.title)
             test.save()
             return redirect('tests:edit_test', test.id)
         else:
@@ -93,7 +97,11 @@ class TestPagesEditView(LoginRequiredMixin, TemplateResponseMixin, View):
             form = PageEditForm(instance=self.page,
                                   data=request.POST,
                                   files=request.FILES)
-        if form.is_valid():
+        print(request.POST)
+        formset = QuestionFormSet(instance=self.page,
+                                  data=request.POST)
+        if form.is_valid() and formset.is_valid():
+            formset.save()
             new_form = form.save(commit=False)
             new_form.right_answer = request.POST.get('right_answer', '0')
             print(request.POST.get('right_answer', 0), new_form.right_answer)
@@ -103,23 +111,24 @@ class TestPagesEditView(LoginRequiredMixin, TemplateResponseMixin, View):
             return redirect('tests:edit_test', test_id)
         else:
             print(form.errors)
+            print(formset.errors)
             return self.render_to_response({'test': self.test, 'form': form})
 
 
-def question_save(request):
-    print(request.POST)
-    test_id = request.POST['test_id']
-    page_order = request.POST['page_order']
-    page = get_object_or_404(Page, order=page_order, test=test_id)
-    formset = QuestionFormSet(instance=page,
-                              data=request.POST)
-    if formset.is_valid():
-        formset.save()
-        print("saved")
-    else:
-        print(formset.errors)
-        print('error')
-    return redirect('tests:edit_page', test_id, page_order)
+# def question_save(request):
+#     print(request.POST)
+#     test_id = request.POST['test_id']
+#     page_order = request.POST['page_order']
+#     page = get_object_or_404(Page, order=page_order, test=test_id)
+#     formset = QuestionFormSet(instance=page,
+#                               data=request.POST)
+#     if formset.is_valid():
+#         formset.save()
+#         print("saved")
+#     else:
+#         print(formset.errors)
+#         print('error')
+#     return redirect('tests:edit_page', test_id, page_order)
 
 
 @ajax_required
