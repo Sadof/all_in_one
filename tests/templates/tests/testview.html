@@ -96,13 +96,13 @@
 
             </table>
 
-                <table class="empty_form" id="empty_form" style="display:none">
-                <tr class="ui-sortable-handle" id="" >
+                <table class="empty_form" id="empty_form" style="display:none" >
+                <tr>
                         <td><span class="question_order"></span></td>
                             <td>
-                                        <input type="hidden" name="question-__prefix__-order" value={{page.id}} id="id_question-__prefix__-order">
-                                        <input type="hidden" name="question-__prefix__-id" value="5" id="id_question-__prefix__-id">
-                                        <input type="hidden" name="question-__prefix__-page" value={{page.id}} id="id_question-__prefix__-page">
+                                <input type="hidden" name="question-__prefix__-order" value="" id="id_question-__prefix__-order">
+                                <input type="hidden" name="question-__prefix__-id" value="" id="id_question-__prefix__-id">
+                                <input type="hidden" name="question-__prefix__-page" value={{page.id}} id="id_question-__prefix__-page">
                                 <input type="text" name="question-__prefix__-text" value="" class="form-control" maxlength="100" id="id_question-__prefix__-text">
                             </td>
                             <td>
@@ -110,7 +110,6 @@
                             </td>
                     </tr>
                     </table>
-        {{formset.empty_form}}
         {% if page or not pagec %}
             <input type="button" value="Add More" id="add_more">
             <input type="submit" value="Edit">
@@ -205,28 +204,28 @@ $('.page-list').sortable({
      <!--});-->
      <!--}-->
 <!--});-->
-$('tbody').sortable({
-    stop: function(event, ui) {
-        question_order = {};
-        $('tbody').children().each(function(){
-            console.log($(this).find("input:hidden").first().val());
-            $(this).find('.question_order').text($(this).index() + 1);
-            $(this).find("input:hidden").first().val($(this).index());
-            question_order[$(this).find("input:hidden").eq(1).val()] = $(this).index()+1;
+<!--$('tbody').sortable({-->
+    <!--stop: function(event, ui) {-->
+        <!--question_order = {};-->
+        <!--$('tbody').children().each(function(){-->
+            <!--console.log($(this).find("input:hidden").first().val());-->
+            <!--$(this).find('.question_order').text($(this).index() + 1);-->
+            <!--$(this).find("input:hidden").first().val($(this).index());-->
+            <!--question_order[$(this).find("input:hidden").eq(1).val()] = $(this).index()+1;-->
 
-        });
-        console.log(question_order[''], Object.keys(question_order).length);
-        if (question_order[''] == Object.keys(question_order).length-1){
-        console.log('Send');
-        $.ajax({
-            type: 'POST',
-            url: '{% url "tests:question_order" %}',
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            data: JSON.stringify(question_order)
-     });}
-     }
-});
+        <!--});-->
+        <!--console.log(question_order[''], Object.keys(question_order).length);-->
+        <!--if (question_order[''] == Object.keys(question_order).length-1){-->
+        <!--console.log('Send');-->
+        <!--$.ajax({-->
+            <!--type: 'POST',-->
+            <!--url: '{% url "tests:question_order" %}',-->
+            <!--contentType: 'application/json; charset=utf-8',-->
+            <!--dataType: 'json',-->
+            <!--data: JSON.stringify(question_order)-->
+     <!--});}-->
+     <!--}-->
+<!--});-->
 
 
 
@@ -240,10 +239,11 @@ question_reorder();
 
 $('#add_more').click(function() {
 	var form_idx = $('#id_question-TOTAL_FORMS').val();
-    console.log(form_idx);
-	$('.table').append($('.empty_form').html().replace(/__prefix__/g, form_idx));
+    console.log($('.empty_form').find('tbody'), $('.empty_form'));
+	$('.table').append($('.empty_form').find('tbody').html().replace(/__prefix__/g, form_idx));
 	$('#id_question-TOTAL_FORMS').val(parseInt(form_idx) + 1);
     question_reorder()
+
 });
 
 {% endblock %}

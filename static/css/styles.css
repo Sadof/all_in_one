@@ -73,7 +73,7 @@
     background: blue;
     }
 
-.test_page_section, .question_commentory, .result_test_section{
+.test_page_section, .question_commentory, .result_test_section .empty-form{
     display:none;
     }
 

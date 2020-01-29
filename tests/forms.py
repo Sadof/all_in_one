@@ -3,6 +3,11 @@ from django.forms import ModelForm
 from django.forms.models import inlineformset_factory
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_slug
+import re
+
+
 
 
 
@@ -19,10 +24,30 @@ class TestCreateForm(ModelForm):
         labels = {
             'slug': _('Humanlike url(optional).')
         }
+        # validators ={
+        #     'title': [validate_slug]
+        # }
 
+
+    def clean(self):
+        print(self.cleaned_data)
+        cleaned_data = self.cleaned_data
+        title = cleaned_data['title']
+        slug = cleaned_data['slug']
+        if re.match("[a-zA-Z0-9]+", title) == None and not slug:
+            raise forms.ValidationError("The title is not sluggable. Change title to valide one or give slug.")
+        if slug.isspace():
+            raise forms.ValidationError('Slug contains only spaces.')
+        return cleaned_data
     
-    
-    
+    # def save(self, commit=True):
+    #     instance = super(TestCreateForm, self).save(commit=False)
+    #     if commit:
+    #         try:
+    #             instance.save()
+    #         except IntegrityError:
+    #             raise forms.ValidationError('This slug already exist!')
+    #     return instance
     
 class PageCreateForm(ModelForm):
     class Meta:
@@ -36,7 +61,8 @@ class PageCreateForm(ModelForm):
             'question_commentory': forms.Textarea(attrs={'cols': 50, 'rows': 5, 'class': 'form-control'}),
         }
         labels = {
-            'title': 'Title( optional)',
+            'title': 'Title',
+            'image': 'Image( optional)',
             'text': 'Question text',
         }
 

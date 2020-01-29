@@ -12,7 +12,7 @@ class Test(models.Model):
     )
     slug = models.SlugField(max_length=100,unique=True, blank=True)
     title = models.CharField(max_length=100,db_index=True)
-    description = models.TextField(blank=True)
+    description = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     status = models.BooleanField(default=False)
     completed = models.PositiveIntegerField(default=0)
@@ -38,7 +38,7 @@ class Test(models.Model):
         ordering = ["-created"]
 
     def save(self, *args, **kwargs):
-        if not self.slug:
+        if not self.slug and not self.slug.isspace():
             self.slug = slugify(self.title)
         super(Test, self).save(*args, **kwargs)
 
@@ -51,7 +51,7 @@ class Page(models.Model):
         on_delete=models.CASCADE,
     )
     order = OrderField(blank=True, for_fields=['test'])
-    title = models.CharField(max_length=100, blank=True)
+    title = models.CharField(max_length=100)
     image = models.ImageField(upload_to='images', blank=True)
     text = models.TextField()
     right_answer = models.CharField(max_length=10, blank=True)

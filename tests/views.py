@@ -12,7 +12,7 @@ import json
 from django import forms
 from django.contrib import messages
 from django.utils.text import slugify
-
+from django.db import IntegrityError
 
 
 
@@ -29,11 +29,13 @@ class TestCreateView(LoginRequiredMixin,TemplateResponseMixin, View):
         if form.is_valid():
             test = form.save(commit=False)
             test.author = request.user
-            if not test.slug:
-                test.slug = slugify(test.title)
-            test.save()
+            try:
+                test.save()
+            except IntegrityError as e:
+                return self.render_to_response({'form': form, 'error': 'This slug already exist. Give new slug or if slug field is empty then slugified title similar to some slug, so new your own slug.'})
             return redirect('tests:edit_test', test.id)
         else:
+            print(form.errors)
             form = TestCreateForm(request.POST)
             return self.render_to_response({'form': form})
 
